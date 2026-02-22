@@ -1,10 +1,14 @@
 extends Node2D
 
-## Ana sahne script'i. UI güncellemelerini GameState sinyalleriyle yapar.
+## Ana sahne: bilet oluşturma, UI güncelleme, oyun döngüsü koordinasyonu.
+
+var _ticket_scene := preload("res://scenes/ticket/Ticket.tscn")
+var _current_ticket: PanelContainer
 
 @onready var coin_label: Label = %CoinLabel
 @onready var bps_label: Label = %BPSLabel
 @onready var stars_label: Label = %StarsLabel
+@onready var ticket_container: CenterContainer = %TicketContainer
 
 
 func _ready() -> void:
@@ -12,8 +16,30 @@ func _ready() -> void:
 	GameState.bps_changed.connect(_on_bps_changed)
 	SaveManager.load_game()
 	_update_all_ui()
+	_spawn_new_ticket()
 	print("[Main] Ready")
 
+
+func _spawn_new_ticket() -> void:
+	if _current_ticket:
+		_current_ticket.queue_free()
+		_current_ticket = null
+
+	_current_ticket = _ticket_scene.instantiate()
+	ticket_container.add_child(_current_ticket)
+	_current_ticket.setup(GameState.current_ticket_type)
+	_current_ticket.ticket_completed.connect(_on_ticket_completed)
+
+
+func _on_ticket_completed(symbols: Array) -> void:
+	# D3'te eşleşme kontrolü eklenecek
+	# Şimdilik: kısa bekleme + yeni bilet
+	print("[Main] Ticket done — symbols: ", symbols)
+	await get_tree().create_timer(0.8).timeout
+	_spawn_new_ticket()
+
+
+# --- UI ---
 
 func _update_all_ui() -> void:
 	_on_coins_changed(GameState.coins)

@@ -109,12 +109,11 @@ text = "🥈 Gümüş 🔒"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="CenterLabel" type="Label" parent="UILayer/UIRoot/VBox/ContentArea/CenterPanel"]
+[node name="TicketContainer" type="CenterContainer" parent="UILayer/UIRoot/VBox/ContentArea/CenterPanel"]
+unique_name_in_owner = true
 layout_mode = 2
-text = "🎰 Bilet Alanı
-(D2'de bilet buraya gelecek)"
-horizontal_alignment = 1
-vertical_alignment = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="RightPanel" type="PanelContainer" parent="UILayer/UIRoot/VBox/ContentArea"]
 layout_mode = 2

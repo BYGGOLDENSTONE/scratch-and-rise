@@ -92,15 +92,18 @@ horizontal_alignment = 1
 layout_mode = 2
 
 [node name="PaperBtn" type="Button" parent="UILayer/UIRoot/VBox/ContentArea/LeftPanel/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "📄 Kağıt (Ücretsiz)"
 
 [node name="BronzeBtn" type="Button" parent="UILayer/UIRoot/VBox/ContentArea/LeftPanel/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 disabled = true
 text = "🥉 Bronz 🔒"
 
 [node name="SilverBtn" type="Button" parent="UILayer/UIRoot/VBox/ContentArea/LeftPanel/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 disabled = true
 text = "🥈 Gümüş 🔒"
@@ -163,6 +166,11 @@ custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 alignment = 1
 theme_override_constants/separation = 12
+
+[node name="ResetBtn" type="Button" parent="UILayer/UIRoot/VBox/BottomBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "🔄 Reset"
 
 [node name="StatsBtn" type="Button" parent="UILayer/UIRoot/VBox/BottomBar/HBox"]
 layout_mode = 2

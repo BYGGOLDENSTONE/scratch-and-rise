@@ -4,6 +4,7 @@ extends Node2D
 
 const MS = preload("res://scripts/systems/match_system.gd")
 const UD = preload("res://scripts/systems/upgrade_data.gd")
+const TD = preload("res://scripts/systems/ticket_data.gd")
 
 var _ticket_scene := preload("res://scenes/ticket/Ticket.tscn")
 var _result_scene := preload("res://scenes/ui/MatchResult.tscn")
@@ -16,16 +17,92 @@ var _current_result: PanelContainer
 @onready var stars_label: Label = %StarsLabel
 @onready var ticket_container: CenterContainer = %TicketContainer
 @onready var upgrade_list: VBoxContainer = %UpgradeList
+@onready var paper_btn: Button = %PaperBtn
+@onready var bronze_btn: Button = %BronzeBtn
+@onready var silver_btn: Button = %SilverBtn
+@onready var reset_btn: Button = %ResetBtn
+
+## Buton → bilet türü eşlemesi
+var _ticket_buttons: Dictionary = {}
 
 
 func _ready() -> void:
 	GameState.coins_changed.connect(_on_coins_changed)
 	GameState.bps_changed.connect(_on_bps_changed)
+
+	# Bilet seçim butonları
+	_ticket_buttons = {
+		"paper": paper_btn,
+		"bronze": bronze_btn,
+		"silver": silver_btn,
+	}
+	paper_btn.pressed.connect(_on_ticket_selected.bind("paper"))
+	bronze_btn.pressed.connect(_on_ticket_selected.bind("bronze"))
+	silver_btn.pressed.connect(_on_ticket_selected.bind("silver"))
+	reset_btn.pressed.connect(_on_reset_pressed)
+
 	SaveManager.load_game()
 	_update_all_ui()
 	_build_upgrade_panel()
 	_spawn_new_ticket()
 	print("[Main] Ready")
+
+
+# --- Bilet Seçimi ---
+
+func _on_ticket_selected(type: String) -> void:
+	if type == GameState.current_ticket_type:
+		return
+	var data := TD.get_ticket(type)
+	# Açılma kontrolü
+	if GameState.total_coins_earned < data["unlock_at"]:
+		return
+	# Maliyet kontrolü
+	if data["cost"] > 0 and GameState.coins < data["cost"]:
+		return
+	GameState.current_ticket_type = type
+	_spawn_new_ticket()
+
+
+func _update_ticket_buttons() -> void:
+	for type in _ticket_buttons:
+		var btn: Button = _ticket_buttons[type]
+		var data := TD.get_ticket(type)
+		var unlocked: bool = GameState.total_coins_earned >= int(data["unlock_at"])
+		var is_selected: bool = GameState.current_ticket_type == type
+		var can_afford: bool = int(data["cost"]) == 0 or GameState.coins >= int(data["cost"])
+
+		if not unlocked:
+			# Kilitli
+			btn.disabled = true
+			btn.text = "%s %s 🔒 (%s)" % [_ticket_icon(type), data["name"],
+				GameState.format_number(data["unlock_at"]) + " coin'de açılır"]
+		elif is_selected:
+			# Seçili
+			btn.disabled = true
+			btn.text = "▶ %s %s" % [_ticket_icon(type), _ticket_cost_text(data)]
+		elif not can_afford:
+			# Para yetmez
+			btn.disabled = true
+			btn.text = "%s %s 💸" % [_ticket_icon(type), _ticket_cost_text(data)]
+		else:
+			# Alınabilir
+			btn.disabled = false
+			btn.text = "%s %s" % [_ticket_icon(type), _ticket_cost_text(data)]
+
+
+func _ticket_icon(type: String) -> String:
+	match type:
+		"paper": return "📄"
+		"bronze": return "🥉"
+		"silver": return "🥈"
+	return "🎫"
+
+
+func _ticket_cost_text(data: Dictionary) -> String:
+	if data["cost"] == 0:
+		return "%s (Ücretsiz)" % data["name"]
+	return "%s (%s Coin)" % [data["name"], GameState.format_number(data["cost"])]
 
 
 # --- Bilet ---
@@ -38,10 +115,21 @@ func _spawn_new_ticket() -> void:
 		_current_result.queue_free()
 		_current_result = null
 
+	var type := GameState.current_ticket_type
+	var data := TD.get_ticket(type)
+
+	# Maliyet düş (kağıt hariç)
+	if data["cost"] > 0:
+		if not GameState.spend_coins(data["cost"]):
+			# Para yetmezse kağıt bilete geri dön
+			GameState.current_ticket_type = "paper"
+			type = "paper"
+
 	_current_ticket = _ticket_scene.instantiate()
 	ticket_container.add_child(_current_ticket)
-	_current_ticket.setup(GameState.current_ticket_type)
+	_current_ticket.setup(type)
 	_current_ticket.ticket_completed.connect(_on_ticket_completed)
+	_update_ticket_buttons()
 
 
 func _on_ticket_completed(symbols: Array) -> void:
@@ -88,11 +176,36 @@ func _update_all_ui() -> void:
 	_on_coins_changed(GameState.coins)
 	_on_bps_changed(GameState.bps)
 	stars_label.text = "⭐ 0"
+	_update_ticket_buttons()
 
 
 func _on_coins_changed(new_amount: int) -> void:
 	coin_label.text = "💰 %s Coin" % GameState.format_number(new_amount)
+	_update_ticket_buttons()
 
 
 func _on_bps_changed(new_bps: float) -> void:
 	bps_label.text = "BPS: %.1f/sn" % new_bps
+
+
+# --- Reset ---
+
+func _on_reset_pressed() -> void:
+	GameState.coins = 0
+	GameState.total_coins_earned = 0
+	GameState.scratch_power = 1
+	GameState.match_bonus_pct = 0.0
+	GameState.current_ticket_type = "paper"
+	GameState.bps = 0.0
+	GameState.upgrades.clear()
+	GameState.buildings.clear()
+	GameState.total_tickets_scratched = 0
+	GameState.total_matches = 0
+	SaveManager.save_game()
+	# Yükseltme panelini yeniden oluştur
+	for child in upgrade_list.get_children():
+		child.queue_free()
+	_build_upgrade_panel()
+	_update_all_ui()
+	_spawn_new_ticket()
+	print("[Main] Game reset!")

@@ -6,9 +6,12 @@ const MS = preload("res://scripts/systems/match_system.gd")
 const UD = preload("res://scripts/systems/upgrade_data.gd")
 const TD = preload("res://scripts/systems/ticket_data.gd")
 
+const BD = preload("res://scripts/systems/building_data.gd")
+
 var _ticket_scene := preload("res://scenes/ticket/Ticket.tscn")
 var _result_scene := preload("res://scenes/ui/MatchResult.tscn")
 var _upgrade_btn_scene := preload("res://scenes/ui/UpgradeButton.tscn")
+var _building_btn_scene := preload("res://scenes/ui/BuildingButton.tscn")
 var _current_ticket: PanelContainer
 var _current_result: PanelContainer
 
@@ -21,6 +24,7 @@ var _current_result: PanelContainer
 @onready var bronze_btn: Button = %BronzeBtn
 @onready var silver_btn: Button = %SilverBtn
 @onready var reset_btn: Button = %ResetBtn
+@onready var building_list: VBoxContainer = %BuildingList
 
 ## Buton → bilet türü eşlemesi
 var _ticket_buttons: Dictionary = {}
@@ -44,6 +48,7 @@ func _ready() -> void:
 	SaveManager.load_game()
 	_update_all_ui()
 	_build_upgrade_panel()
+	_build_building_panel()
 	_spawn_new_ticket()
 	print("[Main] Ready")
 
@@ -170,6 +175,13 @@ func _build_upgrade_panel() -> void:
 		btn.setup(upgrade_id)
 
 
+func _build_building_panel() -> void:
+	for building_id in BD.BUILDING_ORDER:
+		var btn := _building_btn_scene.instantiate()
+		building_list.add_child(btn)
+		btn.setup(building_id)
+
+
 # --- UI ---
 
 func _update_all_ui() -> void:
@@ -202,10 +214,13 @@ func _on_reset_pressed() -> void:
 	GameState.total_tickets_scratched = 0
 	GameState.total_matches = 0
 	SaveManager.save_game()
-	# Yükseltme panelini yeniden oluştur
+	# Panelleri yeniden oluştur
 	for child in upgrade_list.get_children():
 		child.queue_free()
+	for child in building_list.get_children():
+		child.queue_free()
 	_build_upgrade_panel()
+	_build_building_panel()
 	_update_all_ui()
 	_spawn_new_ticket()
 	print("[Main] Game reset!")

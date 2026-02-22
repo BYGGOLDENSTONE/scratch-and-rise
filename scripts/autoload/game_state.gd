@@ -3,6 +3,9 @@ extends Node
 ## Oyun durumunu tutan global autoload.
 ## Tüm sistemler buradan okur/yazar.
 
+const TD = preload("res://scripts/systems/ticket_data.gd")
+const BD = preload("res://scripts/systems/building_data.gd")
+
 # --- Sinyaller ---
 signal coins_changed(new_amount: int)
 signal bps_changed(new_bps: float)
@@ -44,9 +47,23 @@ var buildings: Dictionary = {}
 var total_tickets_scratched: int = 0
 var total_matches: int = 0
 
+# --- Pasif Gelir ---
+var _coin_accumulator: float = 0.0
+
 
 func _ready() -> void:
 	print("[GameState] Initialized")
+
+
+func _process(delta: float) -> void:
+	if bps <= 0.0:
+		return
+	var base_reward: int = TD.get_ticket(current_ticket_type)["base_reward"]
+	_coin_accumulator += bps * float(base_reward) * delta
+	if _coin_accumulator >= 1.0:
+		var whole := int(_coin_accumulator)
+		_coin_accumulator -= whole
+		add_coins(whole)
 
 
 func add_coins(amount: int) -> void:
@@ -89,6 +106,18 @@ func recalculate_upgrades() -> void:
 				scratch_power += data["effect_per_level"] * level
 			"match_bonus_pct":
 				match_bonus_pct += data["effect_per_level"] * level
+
+
+## Building BPS'i yeniden hesapla. Her building alımı sonrası çağrılır.
+func recalculate_buildings() -> void:
+	var total_bps: float = 0.0
+	for building_id in buildings:
+		var data: Dictionary = BD.BUILDINGS.get(building_id, {})
+		if data.is_empty():
+			continue
+		var count: int = buildings[building_id]
+		total_bps += count * float(data["bps"])
+	bps = total_bps
 
 
 ## Büyük sayıları okunabilir formata çevir

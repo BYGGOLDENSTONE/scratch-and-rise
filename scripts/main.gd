@@ -3,9 +3,11 @@ extends Node2D
 ## Ana sahne: bilet → kazıma → eşleşme → coin → yeni bilet döngüsü.
 
 const MS = preload("res://scripts/systems/match_system.gd")
+const UD = preload("res://scripts/systems/upgrade_data.gd")
 
 var _ticket_scene := preload("res://scenes/ticket/Ticket.tscn")
 var _result_scene := preload("res://scenes/ui/MatchResult.tscn")
+var _upgrade_btn_scene := preload("res://scenes/ui/UpgradeButton.tscn")
 var _current_ticket: PanelContainer
 var _current_result: PanelContainer
 
@@ -13,6 +15,7 @@ var _current_result: PanelContainer
 @onready var bps_label: Label = %BPSLabel
 @onready var stars_label: Label = %StarsLabel
 @onready var ticket_container: CenterContainer = %TicketContainer
+@onready var upgrade_list: VBoxContainer = %UpgradeList
 
 
 func _ready() -> void:
@@ -20,12 +23,14 @@ func _ready() -> void:
 	GameState.bps_changed.connect(_on_bps_changed)
 	SaveManager.load_game()
 	_update_all_ui()
+	_build_upgrade_panel()
 	_spawn_new_ticket()
 	print("[Main] Ready")
 
 
+# --- Bilet ---
+
 func _spawn_new_ticket() -> void:
-	# Eski bilet ve sonucu temizle
 	if _current_ticket:
 		_current_ticket.queue_free()
 		_current_ticket = null
@@ -40,16 +45,24 @@ func _spawn_new_ticket() -> void:
 
 
 func _on_ticket_completed(symbols: Array) -> void:
-	# Eşleşme kontrolü
 	var result := MS.evaluate(symbols, GameState.current_ticket_type)
 
-	# Coin kazandır
+	# Yükseltme bonusu uygula
+	var bonus_mult := 1.0 + GameState.match_bonus_pct / 100.0
+	if bonus_mult > 1.0:
+		var original: int = result["total"]
+		result["total"] = int(result["total"] * bonus_mult)
+		result["lines"].append({
+			"text": "⬆ Bonus: x%.2f → +%d" % [bonus_mult, result["total"] - original],
+			"type": "bonus",
+		})
+
 	GameState.add_coins(result["total"])
-	GameState.total_matches += 1 if not result["lines"][0]["type"] == "consolation" else 0
+	if result["lines"].size() > 0 and result["lines"][0]["type"] != "consolation":
+		GameState.total_matches += 1
 
-	print("[Main] Match result: %d coin (jackpot=%s)" % [result["total"], result["is_jackpot"]])
+	print("[Main] Match: %d coin (jackpot=%s)" % [result["total"], result["is_jackpot"]])
 
-	# Sonuç popup'ı göster
 	_current_result = _result_scene.instantiate()
 	ticket_container.add_child(_current_result)
 	_current_result.setup(result)
@@ -58,6 +71,15 @@ func _on_ticket_completed(symbols: Array) -> void:
 
 func _on_result_dismissed() -> void:
 	_spawn_new_ticket()
+
+
+# --- Yükseltmeler ---
+
+func _build_upgrade_panel() -> void:
+	for upgrade_id in UD.UPGRADE_ORDER:
+		var btn := _upgrade_btn_scene.instantiate()
+		upgrade_list.add_child(btn)
+		btn.setup(upgrade_id)
 
 
 # --- UI ---

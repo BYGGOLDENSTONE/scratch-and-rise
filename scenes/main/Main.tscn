@@ -130,11 +130,16 @@ horizontal_alignment = 1
 [node name="Sep" type="HSeparator" parent="UILayer/UIRoot/VBox/ContentArea/RightPanel/VBox"]
 layout_mode = 2
 
-[node name="UpgradePlaceholder" type="Label" parent="UILayer/UIRoot/VBox/ContentArea/RightPanel/VBox"]
+[node name="UpgradeScroll" type="ScrollContainer" parent="UILayer/UIRoot/VBox/ContentArea/RightPanel/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
-text = "(D4'te yükseltmeler gelecek)"
-horizontal_alignment = 1
-modulate = Color(1, 1, 1, 0.5)
+size_flags_vertical = 3
+
+[node name="UpgradeList" type="VBoxContainer" parent="UILayer/UIRoot/VBox/ContentArea/RightPanel/VBox/UpgradeScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
 
 [node name="Sep2" type="HSeparator" parent="UILayer/UIRoot/VBox/ContentArea/RightPanel/VBox"]
 layout_mode = 2

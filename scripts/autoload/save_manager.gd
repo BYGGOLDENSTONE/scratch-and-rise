@@ -71,6 +71,7 @@ func load_game() -> bool:
 	GameState.buildings = data.get("buildings", {})
 	GameState.total_tickets_scratched = int(data.get("total_tickets_scratched", 0))
 	GameState.total_matches = int(data.get("total_matches", 0))
+	GameState.recalculate_upgrades()
 	print("[SaveManager] Game loaded from ", path)
 	return true
 

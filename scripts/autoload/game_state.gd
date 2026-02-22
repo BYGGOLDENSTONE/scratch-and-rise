@@ -17,7 +17,10 @@ var coins: int = 0:
 var total_coins_earned: int = 0
 
 # --- Kazıma ---
-var scratch_power: int = 1  # Tıklama başına kazınan alan sayısı
+var scratch_power: int = 1  # Tıklama başına kazınan alan sayısı (hesaplanmış)
+
+# --- Yükseltme Bonusları (hesaplanmış) ---
+var match_bonus_pct: float = 0.0  # Eşleşme ödülü bonus yüzdesi
 
 # --- Bilet ---
 var current_ticket_type: String = "paper":
@@ -69,6 +72,23 @@ func get_building_count(building_id: String) -> int:
 ## Maliyet formülü: baz * 1.15 ^ seviye
 func calc_cost(base_cost: int, level: int) -> int:
 	return int(base_cost * pow(1.15, level))
+
+
+## Yükseltme etkilerini yeniden hesapla. Her upgrade alımı sonrası çağrılır.
+func recalculate_upgrades() -> void:
+	var UD = preload("res://scripts/systems/upgrade_data.gd")
+	scratch_power = 1
+	match_bonus_pct = 0.0
+	for upgrade_id in upgrades:
+		var data: Dictionary = UD.UPGRADES.get(upgrade_id, {})
+		if data.is_empty():
+			continue
+		var level: int = upgrades[upgrade_id]
+		match data["effect_type"]:
+			"scratch_power":
+				scratch_power += data["effect_per_level"] * level
+			"match_bonus_pct":
+				match_bonus_pct += data["effect_per_level"] * level
 
 
 ## Büyük sayıları okunabilir formata çevir

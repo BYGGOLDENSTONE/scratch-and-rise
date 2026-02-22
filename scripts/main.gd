@@ -24,6 +24,7 @@ var _current_result: PanelContainer
 @onready var bronze_btn: Button = %BronzeBtn
 @onready var silver_btn: Button = %SilverBtn
 @onready var reset_btn: Button = %ResetBtn
+@onready var dev_add_btn: Button = %DevAddBtn
 @onready var building_list: VBoxContainer = %BuildingList
 
 ## Buton → bilet türü eşlemesi
@@ -44,6 +45,7 @@ func _ready() -> void:
 	bronze_btn.pressed.connect(_on_ticket_selected.bind("bronze"))
 	silver_btn.pressed.connect(_on_ticket_selected.bind("silver"))
 	reset_btn.pressed.connect(_on_reset_pressed)
+	dev_add_btn.pressed.connect(_on_dev_add)
 
 	SaveManager.load_game()
 	_update_all_ui()
@@ -224,3 +226,8 @@ func _on_reset_pressed() -> void:
 	_update_all_ui()
 	_spawn_new_ticket()
 	print("[Main] Game reset!")
+
+
+func _on_dev_add() -> void:
+	GameState.add_coins(10_000)
+	print("[Dev] +10K coin")

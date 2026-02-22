@@ -172,6 +172,11 @@ layout_mode = 2
 alignment = 1
 theme_override_constants/separation = 12
 
+[node name="DevAddBtn" type="Button" parent="UILayer/UIRoot/VBox/BottomBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "🛠 +10K"
+
 [node name="ResetBtn" type="Button" parent="UILayer/UIRoot/VBox/BottomBar/HBox"]
 unique_name_in_owner = true
 layout_mode = 2

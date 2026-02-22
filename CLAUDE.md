@@ -56,7 +56,7 @@ incremental/
 | D2 | Bilet & Kazıma | Bilet sahnesi (Node2D), tıklama ile kazıma, sembol atama, bilet tamamlanma | `6a44aaf` |
 | D3 | Eşleşme & Coin | Eşleşme kontrolü (3/4+), coin hesaplama, üst bar, eşleşme sonuç ekranı, yeni bilet gelme | `569e3e4` |
 | D4 | Yükseltmeler | Yükseltme paneli, eşleşme bonusu yükseltmeleri, maliyet formülü (scratch devre dışı) | `30a20a4` |
-| D5 | Bilet Türleri | Kağıt/Bronz/Gümüş biletler, bilet seçim paneli, açılma koşulları, farklı alan+sembol havuzları | `bekliyor` |
+| D5 | Bilet Türleri | Kağıt/Bronz/Gümüş biletler, bilet seçim paneli, açılma koşulları, farklı alan+sembol havuzları | `d427062` |
 | D6 | Buildings | İlk 3-4 building, BPS hesaplama, otomatik coin, building paneli UI | `bekliyor` |
 | D7 | Save & Polish | Save/Load (JSON), otomatik kayıt, offline gelir, temel animasyonlar, UI düzeni | `bekliyor` |
 

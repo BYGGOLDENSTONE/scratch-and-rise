@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/ticket/scratch_area.gd" id="1"]
+[ext_resource type="Shader" path="res://assets/shaders/scratch_mask.gdshader" id="2"]
 
 [sub_resource type="StyleBoxFlat" id="area_bg"]
 bg_color = Color(0.12, 0.12, 0.18, 1)
@@ -8,6 +9,13 @@ corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
+
+[sub_resource type="ShaderMaterial" id="cover_mat"]
+resource_local_to_scene = true
+shader = ExtResource("2")
+shader_parameter/cover_color = Color(0.55, 0.57, 0.62, 1)
+shader_parameter/metallic_strength = 0.3
+shader_parameter/fade_alpha = 1.0
 
 [node name="ScratchArea" type="Panel"]
 script = ExtResource("1")
@@ -21,14 +29,14 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 horizontal_alignment = 1
 vertical_alignment = 1
-visible = false
 mouse_filter = 2
 theme_override_font_sizes/font_size = 32
 
-[node name="Cover" type="ColorRect" parent="."]
+[node name="CoverRect" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 color = Color(0.55, 0.57, 0.62, 1)
+material = SubResource("cover_mat")

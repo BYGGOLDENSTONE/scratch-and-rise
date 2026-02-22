@@ -58,7 +58,7 @@ incremental/
 | D4 | Yükseltmeler | Yükseltme paneli, eşleşme bonusu yükseltmeleri, maliyet formülü (scratch devre dışı) | `30a20a4` |
 | D5 | Bilet Türleri | Kağıt/Bronz/Gümüş biletler, bilet seçim paneli, açılma koşulları, farklı alan+sembol havuzları | `d427062` |
 | D6 | Buildings | İlk 3-4 building, BPS hesaplama, otomatik coin, building paneli UI | `2780585` |
-| D7 | Save & Polish | Save/Load (JSON), otomatik kayıt, offline gelir, temel animasyonlar, UI düzeni | `bekliyor` |
+| D7 | Save & Polish | Save/Load (JSON), otomatik kayıt, offline gelir, temel animasyonlar, UI düzeni | `82e0dbf` |
 
 ### RELEASE FAZLARI (Tam Oyun)
 
@@ -68,11 +68,19 @@ incremental/
 | R2 | Sinerji & Koleksiyon | 8+2 sinerji, sinerji albümü, koleksiyon sistemi (6 set), koleksiyon UI | `bekliyor` |
 | R3 | Olaylar & Ödüller | Altın Bilet, Bull Run, Bear Market, Mega Jackpot, Whale Alert, 3'ten 1 seç, milestonelar | `bekliyor` |
 | R4 | Prestige | Prestige mekaniği, Şans Yıldızı, prestige mağazası (14 bonus), sıfırlama akışı | `bekliyor` |
-| R5 | Görsel & Ses | Kazıma shader'ı, GPUParticles2D, tüm animasyonlar, ses efektleri, müzik, neon casino stili | `bekliyor` |
+| R5 | Görsel & Ses | Kazıma shader'ı, GPUParticles2D, tüm animasyonlar, ses efektleri, müzik, neon casino stili | `kısmen` |
 | R6 | Başarımlar & Final | 40+ başarım, istatistik ekranı, Steam entegrasyonu, balans, son düzeltmeler | `bekliyor` |
 
 ### Tamamlanan Fazlar
 _(Her faz tamamlandığında commit hash'i ile buraya taşınacak)_
+
+### R5 İlerleme Notu
+- **Kazıma shader'ı:** Image mask + shader tabanlı gerçekçi kazıma sistemi eklendi
+  - 80x80 mask, daire fırça (r=12), %65 eşik, fade-out animasyonu
+  - Mouse hover ile kazıma (basılı tutma gerekmiyor)
+  - Simge baştan görünür, kapak shader ile örtülü, kazıdıkça parça parça açılır
+  - Mobil dokunmatik destek (touch emülasyon)
+  - `assets/shaders/scratch_mask.gdshader` — metalik çizgi efekti, gradyan, kenar yumuşatma
 
 ---
 

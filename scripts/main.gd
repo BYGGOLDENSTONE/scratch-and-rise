@@ -53,7 +53,7 @@ func _ready() -> void:
 
 	# Dev butonlarını gizle (debug için .tscn'den visible açılabilir)
 	dev_add_btn.visible = false
-	reset_btn.visible = false
+	reset_btn.visible = true
 
 	SaveManager.load_game()
 	_update_all_ui()

@@ -122,13 +122,15 @@ func recalculate_buildings() -> void:
 
 ## Büyük sayıları okunabilir formata çevir
 func format_number(n: int) -> String:
-	if n < 1_000:
-		return str(n)
-	elif n < 1_000_000:
-		return "%.1fK" % (n / 1_000.0)
-	elif n < 1_000_000_000:
-		return "%.1fM" % (n / 1_000_000.0)
-	elif n < 1_000_000_000_000:
-		return "%.1fB" % (n / 1_000_000_000.0)
-	else:
-		return "%.1fT" % (n / 1_000_000_000_000.0)
+	var thresholds := [
+		[1_000_000_000_000_000_000, "Qi"],
+		[1_000_000_000_000_000, "Qa"],
+		[1_000_000_000_000, "T"],
+		[1_000_000_000, "B"],
+		[1_000_000, "M"],
+		[1_000, "K"],
+	]
+	for entry in thresholds:
+		if n >= entry[0]:
+			return "%.1f%s" % [float(n) / float(entry[0]), entry[1]]
+	return str(n)

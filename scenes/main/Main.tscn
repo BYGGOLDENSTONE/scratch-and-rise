@@ -183,6 +183,7 @@ layout_mode = 2
 text = "🔄 Reset"
 
 [node name="StatsBtn" type="Button" parent="UILayer/UIRoot/VBox/BottomBar/HBox"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "📊 Stats"
 

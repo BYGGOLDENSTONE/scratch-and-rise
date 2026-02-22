@@ -12,6 +12,8 @@ var _ticket_scene := preload("res://scenes/ticket/Ticket.tscn")
 var _result_scene := preload("res://scenes/ui/MatchResult.tscn")
 var _upgrade_btn_scene := preload("res://scenes/ui/UpgradeButton.tscn")
 var _building_btn_scene := preload("res://scenes/ui/BuildingButton.tscn")
+var _offline_popup_scene := preload("res://scenes/ui/OfflinePopup.tscn")
+var _stats_popup_scene := preload("res://scenes/ui/StatsPopup.tscn")
 var _current_ticket: PanelContainer
 var _current_result: PanelContainer
 
@@ -26,6 +28,7 @@ var _current_result: PanelContainer
 @onready var reset_btn: Button = %ResetBtn
 @onready var dev_add_btn: Button = %DevAddBtn
 @onready var building_list: VBoxContainer = %BuildingList
+@onready var stats_btn: Button = %StatsBtn
 
 ## Buton → bilet türü eşlemesi
 var _ticket_buttons: Dictionary = {}
@@ -46,12 +49,18 @@ func _ready() -> void:
 	silver_btn.pressed.connect(_on_ticket_selected.bind("silver"))
 	reset_btn.pressed.connect(_on_reset_pressed)
 	dev_add_btn.pressed.connect(_on_dev_add)
+	stats_btn.pressed.connect(_on_stats_pressed)
+
+	# Dev butonlarını gizle (debug için .tscn'den visible açılabilir)
+	dev_add_btn.visible = false
+	reset_btn.visible = false
 
 	SaveManager.load_game()
 	_update_all_ui()
 	_build_upgrade_panel()
 	_build_building_panel()
 	_spawn_new_ticket()
+	_check_offline_earnings()
 	print("[Main] Ready")
 
 
@@ -196,10 +205,17 @@ func _update_all_ui() -> void:
 func _on_coins_changed(new_amount: int) -> void:
 	coin_label.text = "💰 %s Coin" % GameState.format_number(new_amount)
 	_update_ticket_buttons()
+	# Coin label pulse animasyonu
+	var tween := create_tween()
+	tween.tween_property(coin_label, "scale", Vector2(1.15, 1.15), 0.08)
+	tween.tween_property(coin_label, "scale", Vector2.ONE, 0.12)
 
 
 func _on_bps_changed(new_bps: float) -> void:
 	bps_label.text = "BPS: %.1f/sn" % new_bps
+	var tween := create_tween()
+	tween.tween_property(bps_label, "scale", Vector2(1.1, 1.1), 0.08)
+	tween.tween_property(bps_label, "scale", Vector2.ONE, 0.12)
 
 
 # --- Reset ---
@@ -231,3 +247,21 @@ func _on_reset_pressed() -> void:
 func _on_dev_add() -> void:
 	GameState.add_coins(10_000)
 	print("[Dev] +10K coin")
+
+
+# --- Stats ---
+
+func _on_stats_pressed() -> void:
+	var popup := _stats_popup_scene.instantiate()
+	get_node("UILayer").add_child(popup)
+
+
+# --- Offline Gelir ---
+
+func _check_offline_earnings() -> void:
+	var result := SaveManager.calc_offline_earnings()
+	if result.is_empty():
+		return
+	var popup := _offline_popup_scene.instantiate()
+	get_node("UILayer").add_child(popup)
+	popup.setup(result["elapsed"], result["earnings"])

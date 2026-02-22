@@ -52,8 +52,8 @@ incremental/
 
 | Faz | İsim | Kapsam | Durum |
 |-----|------|--------|-------|
-| D1 | Proje Altyapısı | Godot ayarları, klasör yapısı, autoload iskeletleri, ana sahne layout, placeholder UI | `bekliyor` |
-| D2 | Bilet & Kazıma | Bilet sahnesi (Node2D), tıklama ile kazıma, sembol atama, bilet tamamlanma | `bekliyor` |
+| D1 | Proje Altyapısı | Godot ayarları, klasör yapısı, autoload iskeletleri, ana sahne layout, placeholder UI | `166ecae` |
+| D2 | Bilet & Kazıma | Bilet sahnesi (Node2D), tıklama ile kazıma, sembol atama, bilet tamamlanma | `6a44aaf` |
 | D3 | Eşleşme & Coin | Eşleşme kontrolü (2/3/4+), coin hesaplama, üst bar, eşleşme sonuç ekranı, yeni bilet gelme | `bekliyor` |
 | D4 | Yükseltmeler | Yükseltme paneli, kazıma/eşleşme/şans yükseltmeleri (ilk 2-3'er), maliyet formülü | `bekliyor` |
 | D5 | Bilet Türleri | Kağıt/Bronz/Gümüş biletler, bilet seçim paneli, açılma koşulları, farklı alan+sembol havuzları | `bekliyor` |

@@ -1,9 +1,13 @@
 extends Node2D
 
-## Ana sahne: bilet oluşturma, UI güncelleme, oyun döngüsü koordinasyonu.
+## Ana sahne: bilet → kazıma → eşleşme → coin → yeni bilet döngüsü.
+
+const MS = preload("res://scripts/systems/match_system.gd")
 
 var _ticket_scene := preload("res://scenes/ticket/Ticket.tscn")
+var _result_scene := preload("res://scenes/ui/MatchResult.tscn")
 var _current_ticket: PanelContainer
+var _current_result: PanelContainer
 
 @onready var coin_label: Label = %CoinLabel
 @onready var bps_label: Label = %BPSLabel
@@ -21,9 +25,13 @@ func _ready() -> void:
 
 
 func _spawn_new_ticket() -> void:
+	# Eski bilet ve sonucu temizle
 	if _current_ticket:
 		_current_ticket.queue_free()
 		_current_ticket = null
+	if _current_result:
+		_current_result.queue_free()
+		_current_result = null
 
 	_current_ticket = _ticket_scene.instantiate()
 	ticket_container.add_child(_current_ticket)
@@ -32,10 +40,23 @@ func _spawn_new_ticket() -> void:
 
 
 func _on_ticket_completed(symbols: Array) -> void:
-	# D3'te eşleşme kontrolü eklenecek
-	# Şimdilik: kısa bekleme + yeni bilet
-	print("[Main] Ticket done — symbols: ", symbols)
-	await get_tree().create_timer(0.8).timeout
+	# Eşleşme kontrolü
+	var result := MS.evaluate(symbols, GameState.current_ticket_type)
+
+	# Coin kazandır
+	GameState.add_coins(result["total"])
+	GameState.total_matches += 1 if not result["lines"][0]["type"] == "consolation" else 0
+
+	print("[Main] Match result: %d coin (jackpot=%s)" % [result["total"], result["is_jackpot"]])
+
+	# Sonuç popup'ı göster
+	_current_result = _result_scene.instantiate()
+	ticket_container.add_child(_current_result)
+	_current_result.setup(result)
+	_current_result.dismissed.connect(_on_result_dismissed)
+
+
+func _on_result_dismissed() -> void:
 	_spawn_new_ticket()
 
 

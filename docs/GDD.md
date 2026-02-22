@@ -70,8 +70,8 @@ Kazıma sonrası:
 ```
 
 ### Eşleşme Kuralları
-- **2 aynı sembol** = küçük ödül (baz ödül)
-- **3 aynı sembol** = büyük ödül (baz x5)
+- **2 aynı sembol** = eşleşme sayılmaz
+- **3 aynı sembol** = eşleşme ödülü (baz x5)
 - **4+ aynı sembol** = jackpot (baz x20)
 - **Eşleşme yok** = teselli ödülü (baz x0.2, boş bilet yok)
 - **Sinerji** = özel kombinasyon bonusu (baz x3-50 arası)
